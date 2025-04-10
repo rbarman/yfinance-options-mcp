@@ -10,15 +10,15 @@ class OptionType(Enum):
 # ticker.option_chain(date=expiration_date)
 
 
-async def _get_put_options_chain(ticker_symbol: str) -> pd.DataFrame:
-    ticker = yf.Ticker(ticker_symbol)
-    option_chain = ticker.option_chain().puts
-    return option_chain
+# async def _get_put_options_chain(ticker_symbol: str) -> pd.DataFrame:
+#     ticker = yf.Ticker(ticker_symbol)
+#     option_chain = ticker.option_chain().puts
+#     return option_chain
 
-async def _get_call_options_chain(ticker_symbol: str) -> pd.DataFrame:
-    ticker = yf.Ticker(ticker_symbol)
-    option_chain = ticker.option_chain().calls
-    return option_chain
+# async def _get_call_options_chain(ticker_symbol: str) -> pd.DataFrame:
+#     ticker = yf.Ticker(ticker_symbol)
+#     option_chain = ticker.option_chain().calls
+#     return option_chain
 
 def format_options_chain(options_chain: pd.DataFrame) -> str:
     # keep only the columns that are needed
@@ -26,14 +26,20 @@ def format_options_chain(options_chain: pd.DataFrame) -> str:
     df.columns = ["strike", "price", "change", "percent_change", "volume", "open_interest", "implied_volatility", "in_the_money"]
     return df.to_string()
 
-async def get_options_chain(ticker_symbol: str, type: OptionType) -> str:
+async def get_options_chain(ticker_symbol: str, type: OptionType, expiration_date: str = None) -> str:
+    ticker = yf.Ticker(ticker_symbol)
     if type == OptionType.PUT:
-        chain = await _get_put_options_chain(ticker_symbol)
+        chain = ticker.option_chain(date=expiration_date).puts
     elif type == OptionType.CALL:
-        chain = await _get_call_options_chain(ticker_symbol)
+        chain = ticker.option_chain(date=expiration_date).calls
     return format_options_chain(chain)
 
 if __name__ == "__main__":
-    ticker_symbol = "GOOG"
-    put_options_chain = get_options_chain(ticker_symbol, OptionType.PUT)
-    print(put_options_chain)
+    import asyncio
+
+    async def main():
+        ticker_symbol = "GOOG"
+        put_options_chain = await get_options_chain(ticker_symbol, OptionType.CALL)
+        print(put_options_chain)
+
+    asyncio.run(main())
