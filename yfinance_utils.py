@@ -34,12 +34,27 @@ async def get_options_chain(ticker_symbol: str, type: OptionType, expiration_dat
         chain = ticker.option_chain(date=expiration_date).calls
     return format_options_chain(chain)
 
+async def get_expiration_dates(ticker_symbol: str) -> list[str]:
+    ticker = yf.Ticker(ticker_symbol)
+    ticker._download_options()
+    return list(ticker._expirations.keys())
+
 if __name__ == "__main__":
     import asyncio
 
     async def main():
         ticker_symbol = "GOOG"
-        put_options_chain = await get_options_chain(ticker_symbol, OptionType.CALL)
+        
+        # get expiration dates
+        expiration_dates = await get_expiration_dates(ticker_symbol)
+        print(f"Expiration dates for {ticker_symbol}:")
+        for i, expiration_date in enumerate(expiration_dates):
+            print(f"{i+1}. {expiration_date}")
+
+        # get options chain for the first expiration date
+        expiration_date = expiration_dates[1]
+        print(f"Options chain for {ticker_symbol} at expiration date {expiration_date}:")
+        put_options_chain = await get_options_chain(ticker_symbol, OptionType.CALL, expiration_date)
         print(put_options_chain)
 
     asyncio.run(main())
