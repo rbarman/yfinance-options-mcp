@@ -1,38 +1,56 @@
 
 from mcp.server.fastmcp import FastMCP
-from yfinance_utils import get_options_chain, OptionType
+from yfinance_utils import get_options_chain , OptionType
 
 # Initialize FastMCP server
 mcp = FastMCP("yfinance-options-mcp")
 
 
-@mcp.tool(name="get_put_options_chain")
-async def get_put_options_chain(ticker_symbol: str) -> str:
+# @mcp.tool(name="get_put_options_chain")
+# async def get_put_options_chain(ticker_symbol: str) -> str:
+#     """
+#     Get the put options chain for a given ticker symbol
+
+#     Args:
+#         ticker_symbol: The ticker symbol of the stock to get the put options chain for
+
+#     Returns:
+#         A string representation of the put options chain
+#     """
+#     put_options_chain = await get_options_chain(ticker_symbol, OptionType.PUT)
+#     return put_options_chain
+
+# @mcp.tool(name="get_call_options_chain")
+# async def get_call_options_chain(ticker_symbol: str) -> str:
+#     """
+#     Get the call options chain for a given ticker symbol
+
+#     Args:
+#         ticker_symbol: The ticker symbol of the stock to get the call options chain for
+
+#     Returns:
+#         A string representation of the call options chain
+#     """
+#     call_options_chain = await get_options_chain(ticker_symbol, OptionType.CALL)
+#     return call_options_chain
+
+
+# Below tool crashes Claude desktop ...
+
+@mcp.tool(name="get_options_chain")
+async def get_options_chain(ticker_symbol: str, type: OptionType) -> str:
     """
-    Get the put options chain for a given ticker symbol
+    Get the Put or Call options chain for a given ticker symbol
 
     Args:
-        ticker_symbol: The ticker symbol of the stock to get the put options chain for
+        ticker_symbol: The ticker symbol of the stock to get the options chain for
+        type: The type of options chain to get, either PUT or CALL
 
     Returns:
-        A string representation of the put options chain
+        A string representation of the options chain
     """
-    put_options_chain = await get_options_chain(ticker_symbol, OptionType.PUT)
-    return put_options_chain
-
-@mcp.tool(name="get_call_options_chain")
-async def get_call_options_chain(ticker_symbol: str) -> str:
-    """
-    Get the call options chain for a given ticker symbol
-
-    Args:
-        ticker_symbol: The ticker symbol of the stock to get the call options chain for
-
-    Returns:
-        A string representation of the call options chain
-    """
-    call_options_chain = await get_options_chain(ticker_symbol, OptionType.CALL)
-    return call_options_chain
+    options_chain = await get_options_chain(ticker_symbol, type)
+    return options_chain
 
 
 if __name__ == "__main__":
