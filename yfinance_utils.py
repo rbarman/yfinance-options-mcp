@@ -26,12 +26,12 @@ def format_options_chain(options_chain: pd.DataFrame) -> str:
     df.columns = ["strike", "price", "change", "percent_change", "volume", "open_interest", "implied_volatility", "in_the_money"]
     return df.to_string()
 
-async def get_options_chain(ticker_symbol: str, type: OptionType) -> str:
+async def get_options_chain(ticker_symbol: str, type: OptionType, expiration_date: str = None) -> str:
     ticker = yf.Ticker(ticker_symbol)
     if type == OptionType.PUT:
-        chain = ticker.option_chain().puts
+        chain = ticker.option_chain(date=expiration_date).puts
     elif type == OptionType.CALL:
-        chain = ticker.option_chain().calls
+        chain = ticker.option_chain(date=expiration_date).calls
     return format_options_chain(chain)
 
 if __name__ == "__main__":
